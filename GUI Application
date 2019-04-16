@@ -5,46 +5,97 @@ Date: March 7, 2019
 Purpose: This application is a windows-based, sales order processing application for Glamping World
         client to help with processing of phone orders. 
 '''
+item = { 'Portable Water Heater': 70,
+        'Yellowstone Steel Flat BBQ' : 49,
+        'Stove Flashing Kit' : 29,
+        '5m Bell Tent Matting' : 139,
+        'Camping Airbed - Single' : 19,
+        'Camping Airbed - Double' : 24,
+        'Double Action Hand Pump' :14,
+        '4m Star Bell Tent' : 595,
+        '4m Canvas Bell Tent, Single':419
+}
 
 from tkinter import * # Import tkinter
 import tkinter.font
 from PIL import Image
 
+
 class ItemToPurchase:                     # this ItemToPurchase class is a template for creating instances of a Item  
-   def __init__(self):                    # this type of method is known as a constructor, setting up attributes of a new instance with specified values
-      window = Tk() # Create a window
-      window.title("Order Processing Information") # Set title of a window
-      photo = Image.open("/Users/thinhnguyen/Desktop/Spring 2019/BIS Development/Python File/GWlogo.gif")
-      photo = photo.resize((290,144), Image.ANTIALIAS)
-      photo.save("GW_logo.gif","gif")
-      GW_logo = PhotoImage(file="GW_logo.gif")
-      Label(window, image=GW_logo).grid(row = 1, column = 1, sticky = W)
-      Label(window, text = "Product Information - Order Details", font = 'Helvetica 20 bold').grid(row = 4, column = 4, sticky = W)                     
-      Label(window, text = "Enter Product Name or Product ID").grid(row = 5, column = 4, sticky = W)
-      Label(window, text = "Quantity").grid(row = 6, column = 4, sticky = W)
-      Label(window, text = "Price (USD)").grid(row = 7, column = 4, sticky = W)
-      Label(window, text = "Order Information").grid(row = 4, column = 1, sticky ='')
-      Label(window, text = "Product Information", font = 'Helvetica 15 bold').grid(row = 5, column = 1, sticky ='')
-      Label(window, text = "Shipping Information").grid(row = 6, column = 1, sticky = '')
-      Label(window, text = "Billing Information").grid(row = 7, column = 1, sticky = '')
-      Label(window, text = "Order Summary").grid(row = 8, column = 1, sticky = '')
-      
-      #set up the input area for the order detail in the right column, using Entry for textboxes 
-      self.item_name = StringVar()             # we are initializing the Item with name, description, price and quantity attributes
-      Entry(window, textvariable = self.item_name,justify = LEFT).grid(row = 5, column = 5)
-      self.item_quantity = StringVar()
-      Entry(window, textvariable = self.item_quantity, justify = LEFT).grid(row = 6, column = 5)
-      self.item_price = StringVar()
-      Entry(window, textvariable = self.item_price, justify = LEFT).grid(row = 7, column = 5)
-      self.item_price = 0.0
-      self.item_quantity = 0
+    def __init__(self):                     # this type of method is known as a constructor, setting up attributes of a new instance with specified values
+        window = Tk()
+        var = IntVar()
+        window.title("Glamping World Order Application")
+        #----GW Company Logo-----
+        photo = Image.open("/Users/thinhnguyen/Desktop/Spring 2019/BIS Development/Python File/GWlogo.gif")
+        photo = photo.resize((290,144), Image.ANTIALIAS)
+        photo.save("GW_logo.gif","gif")
+        GW_logo = PhotoImage(file="GW_logo.gif")
+        Label(window, image=GW_logo).grid(row = 1, column = 1, sticky = W)
+
+        #----Collect Customer Infomation----
+        Label(window, text = "Customer Information", font = 'Helvetica 20 bold').grid(row= 2, column = 4, sticky = W)
+        Radiobutton(window, text = "New Customer", variable = var, value = 1).grid(row=3,column=4, sticky = W)
+        Radiobutton(window,text= "Return Customer",variable = var, value =2 ).grid(row=3,column=5,sticky= W)
+        Label(window, text = "Customer ID").grid(row= 4, column = 4, sticky = W)
+        Label(window, text = "Customer First Name").grid(row = 5, column = 4, sticky = W)
+        Label(window, text = "Customer Last Name").grid(row = 6, column = 4, sticky = W)
+        self.customer_id = StringVar()             # we are initializing the customer with ID, name
+        Entry(window, textvariable = self.customer_id,justify = LEFT).grid(row = 4, column = 5)
+        self.customer_first = StringVar()
+        Entry(window, textvariable = self.customer_first, justify = LEFT).grid(row = 5, column = 5)
+        self.customer_last = StringVar()
+        Entry(window, textvariable = self.customer_last, justify = LEFT).grid(row = 6, column = 5)
+
+        #----Choose item add to cart-----
+        Label(window, text = "Product Information - Order Details", font = 'Helvetica 20 bold').grid(row = 7, column = 4, sticky = W)                     
+        Label(window, text = "Choose Product Name").grid(row = 8, column = 4, sticky = W)
+        Label(window, text = "Quantity").grid(row = 10, column = 4, sticky = W)
+        Label(window, text = "Price (USD)").grid(row = 9, column = 4, sticky = W)
+
+        #Tracking Steps Label 
+        Label(window, text = "Order Information").grid(row = 4, column = 1, sticky ='')
+        Label(window, text = "Product Information", font = 'Helvetica 15 bold').grid(row = 5, column = 1, sticky ='')
+        Label(window, text = "Shipping Information").grid(row = 6, column = 1, sticky = '')
+        Label(window, text = "Billing Information").grid(row = 7, column = 1, sticky = '')
+        Label(window, text = "Order Summary").grid(row = 8, column = 1, sticky = '')
+
+        #----We are initializing the Item with name, price and quantity attributes----
+        self.item_option = item
+        self.item_name = sorted(item.keys())
+        self.input_item_name = StringVar()
+        self.input_item_name.set('Choose your product')
+        self.select_item_name = tkinter.OptionMenu(window, self.input_item_name, *self.item_name, command=self.action_update_price)            
+        self.select_item_name.config(width=18)
+        self.select_item_name.grid(row=8, column=5, sticky= W)
+        #Item Quantity Input
+        self.item_quantity = StringVar()
+        self.item_quantity.set('0')
+        tkinter.OptionMenu(window, self.item_quantity, "1","2","3","4","5","6","7","8","9","10").grid(row = 10, column = 5, sticky = NW)
+        self.item_quantity = 0
+        #Item Price showing after choosing item
+        self.item_priceVar = StringVar()
+        Label(window, textvariable = self.item_priceVar).grid(row = 9, column = 5, sticky = W)
+        
+
+        addToCartBtn = Button(window, text="Add To Cart", command=lambda: self.addItemToCart).grid(row = 11, column = 5, sticky = NW)
+        btnGoCart = Button(window, text="Go To Cart", font=("Candara",15,"bold"),fg="red",bg="white").grid(row = 13, column = 6, sticky =NW)
+        
+        window.grid_columnconfigure(10,minsize=100)
+        window.grid_rowconfigure(15,minsize=100)   
+        window.mainloop()
+
+    #Update Price with selected item
+    def action_update_price (self,value):
+        """Update price corresponding with selected item"""
+        self.item_priceVar.set(self.item_option[value])
+
+    def addItemToCart(self, item):                # add_item is a method of the ShoppingCart class that appends an item to the shopping cart    
+        self.cart_items.append(item)
+
+    #Add to cart with selected item & quantity
+   
 
 
-
-
-      window.grid_columnconfigure(7,minsize=100)
-      window.grid_rowconfigure(10,minsize=100)   
-
-      window.mainloop()
 
 ItemToPurchase()
