@@ -2,8 +2,7 @@
 Program: Glamping World Sales Order Processing Application
 Developer: Vertex Consulting
 Date: March 7, 2019
-Purpose: This application is a windows-based, sales order processing application for Glamping World
-        client to help with processing of phone orders. 
+Purpose: This application is a windows-based, sales order processing application for Glamping World client to help with processing of phone orders. 
 '''
 item = { 'Portable Water Heater': 70,
         'Yellowstone Steel Flat BBQ' : 49,
