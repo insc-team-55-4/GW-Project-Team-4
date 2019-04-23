@@ -2,7 +2,8 @@
 Program: Glamping World Sales Order Processing Application
 Developer: Vertex Consulting
 Date: March 7, 2019
-Purpose: This application is a windows-based, sales order processing application for Glamping World client to help with processing of phone orders. 
+Purpose: This application is a windows-based, sales order processing application for Glamping World
+        client to help with processing of phone orders. 
 '''
 item = { 'Portable Water Heater': 70,
         'Yellowstone Steel Flat BBQ' : 49,
@@ -14,16 +15,21 @@ item = { 'Portable Water Heater': 70,
         '4m Star Bell Tent' : 595,
         '4m Canvas Bell Tent, Single':419
 }
-
-from tkinter import * # Import tkinter
+import tkinter as tk # Import tkinter
+from tkinter import * 
+from tkinter import messagebox
 import tkinter.font
 from PIL import Image
 
+Cart = {}
 
 class ItemToPurchase:                     # this ItemToPurchase class is a template for creating instances of a Item  
+    """The main GUI window and methods"""
     def __init__(self):                     # this type of method is known as a constructor, setting up attributes of a new instance with specified values
         window = Tk()
-        var = IntVar()
+        window['bg'] = 'white'
+        var1 = IntVar(value=1)
+        var2 = IntVar(value=1)
         window.title("Glamping World Order Application")
         #----GW Company Logo-----
         photo = Image.open("/Users/thinhnguyen/Desktop/Spring 2019/BIS Development/Python File/GWlogo.gif")
@@ -32,32 +38,43 @@ class ItemToPurchase:                     # this ItemToPurchase class is a templ
         GW_logo = PhotoImage(file="GW_logo.gif")
         Label(window, image=GW_logo).grid(row = 1, column = 1, sticky = W)
 
+        #-----Order Processing Information Header with Help Button---------
+        support_button = tk.Button(window, command= self.supportCommand, highlightthickness = 0, bd = 0)
+        support_icon = PhotoImage(file = "/Users/thinhnguyen/Desktop/Spring 2019/BIS Development/support copy.png")
+        support_button.config(image=support_icon,bg ="white", borderwidth=0,width = 50, height = 50)
+        support_button.grid(row = 1, column = 6)
+
+        #------Language Option Checkbox menu------
+
+        Radiobutton(window, text = "English", variable = var1, value = 1).grid(row=2,column=4, sticky = W)
+        Radiobutton(window,text= "Spanish",variable = var1, value =2 ).grid(row=2,column=5,sticky= W)
+
+
         #----Collect Customer Infomation----
-        Label(window, text = "Customer Information", font = 'Helvetica 20 bold').grid(row= 2, column = 4, sticky = W)
-        Radiobutton(window, text = "New Customer", variable = var, value = 1).grid(row=3,column=4, sticky = W)
-        Radiobutton(window,text= "Return Customer",variable = var, value =2 ).grid(row=3,column=5,sticky= W)
-        Label(window, text = "Customer ID").grid(row= 4, column = 4, sticky = W)
-        Label(window, text = "Customer First Name").grid(row = 5, column = 4, sticky = W)
-        Label(window, text = "Customer Last Name").grid(row = 6, column = 4, sticky = W)
+        Label(window, text = "Customer Information", font = 'Helvetica 20 bold').grid(row= 3, column = 4, sticky = W)
+        Radiobutton(window, text = "New Customer", variable = var2, value = 1).grid(row=4,column=4, sticky = W)
+        Radiobutton(window,text= "Return Customer",variable = var2, value = 2 ).grid(row=4,column=5,sticky= W)
+        Label(window, text = "Customer ID").grid(row= 5, column = 4, sticky = W)
+        Label(window, text = "Customer First Name").grid(row = 6, column = 4, sticky = W)
+        Label(window, text = "Customer Last Name").grid(row = 7, column = 4, sticky = W)
         self.customer_id = StringVar()             # we are initializing the customer with ID, name
-        Entry(window, textvariable = self.customer_id,justify = LEFT).grid(row = 4, column = 5)
+        Entry(window, textvariable = self.customer_id,justify = LEFT).grid(row = 5, column = 5)
         self.customer_first = StringVar()
-        Entry(window, textvariable = self.customer_first, justify = LEFT).grid(row = 5, column = 5)
+        Entry(window, textvariable = self.customer_first, justify = LEFT).grid(row = 6, column = 5)
         self.customer_last = StringVar()
-        Entry(window, textvariable = self.customer_last, justify = LEFT).grid(row = 6, column = 5)
+        Entry(window, textvariable = self.customer_last, justify = LEFT).grid(row = 7, column = 5)
 
         #----Choose item add to cart-----
-        Label(window, text = "Product Information - Order Details", font = 'Helvetica 20 bold').grid(row = 7, column = 4, sticky = W)                     
-        Label(window, text = "Choose Product Name").grid(row = 8, column = 4, sticky = W)
-        Label(window, text = "Quantity").grid(row = 10, column = 4, sticky = W)
-        Label(window, text = "Price (USD)").grid(row = 9, column = 4, sticky = W)
+        Label(window, text = "Product Information - Order Details", font = 'Helvetica 20 bold').grid(row = 8, column = 4, sticky = W)                     
+        Label(window, text = "Choose Product Name").grid(row = 9, column = 4, sticky = W)
+        Label(window, text = "Quantity").grid(row = 11, column = 4, sticky = W)
+        Label(window, text = "Price (USD)").grid(row = 10, column = 4, sticky = W)
 
-        #Tracking Steps Label 
-        Label(window, text = "Order Information").grid(row = 4, column = 1, sticky ='')
-        Label(window, text = "Product Information", font = 'Helvetica 15 bold').grid(row = 5, column = 1, sticky ='')
-        Label(window, text = "Shipping Information").grid(row = 6, column = 1, sticky = '')
-        Label(window, text = "Billing Information").grid(row = 7, column = 1, sticky = '')
-        Label(window, text = "Order Summary").grid(row = 8, column = 1, sticky = '')
+        #Tracking Steps Label
+        Label(window, text = "Product Information", font = 'Helvetica 15 bold').grid(row = 6, column = 1, sticky ='')
+        Label(window, text = "Shipping Information").grid(row = 7, column = 1, sticky = '')
+        Label(window, text = "Billing Information").grid(row = 8, column = 1, sticky = '')
+        Label(window, text = "Order Summary").grid(row = 9, column = 1, sticky = '')
 
         #----We are initializing the Item with name, price and quantity attributes----
         self.item_option = item
@@ -66,35 +83,92 @@ class ItemToPurchase:                     # this ItemToPurchase class is a templ
         self.input_item_name.set('Choose your product')
         self.select_item_name = tkinter.OptionMenu(window, self.input_item_name, *self.item_name, command=self.action_update_price)            
         self.select_item_name.config(width=18)
-        self.select_item_name.grid(row=8, column=5, sticky= W)
+        self.select_item_name.grid(row=9, column=5, sticky= W)
+
         #Item Quantity Input
         self.item_quantity = StringVar()
         self.item_quantity.set('0')
-        tkinter.OptionMenu(window, self.item_quantity, "1","2","3","4","5","6","7","8","9","10").grid(row = 10, column = 5, sticky = NW)
-        self.item_quantity = 0
+        tkinter.OptionMenu(window, self.item_quantity, "0","1","2","3","4","5","6","7","8","9","10").grid(row = 11, column = 5, sticky = NW)
+
         #Item Price showing after choosing item
         self.item_priceVar = StringVar()
-        Label(window, textvariable = self.item_priceVar).grid(row = 9, column = 5, sticky = W)
+        Label(window, textvariable = self.item_priceVar).grid(row = 10, column = 5, sticky = W)
         
 
-        addToCartBtn = Button(window, text="Add To Cart", command=lambda: self.addItemToCart).grid(row = 11, column = 5, sticky = NW)
-        btnGoCart = Button(window, text="Go To Cart", font=("Candara",15,"bold"),fg="red",bg="white").grid(row = 13, column = 6, sticky =NW)
+        addToCartBtn = Button(window, text="Add To Cart", command= self.addItemToCart).grid(row = 12, column = 5, sticky = W)
+        btnGoCart = Button(window, text="Go To Cart", font=("Helvetica",15,"bold"), command = viewCart).grid(row = 15, column = 5, sticky = W)
         
         window.grid_columnconfigure(10,minsize=100)
         window.grid_rowconfigure(15,minsize=100)   
         window.mainloop()
 
-    #Update Price with selected item
+    #----------BUTTON FUNCTIONALITY----------
+    """Update price corresponding with selected item"""
     def action_update_price (self,value):
-        """Update price corresponding with selected item"""
         self.item_priceVar.set(self.item_option[value])
+        return self.item_priceVar
 
-    def addItemToCart(self, item):                # add_item is a method of the ShoppingCart class that appends an item to the shopping cart    
-        self.cart_items.append(item)
+    def print_item_cost(self,value):             # print_item_cost is a method of the ItemToPurchase class that prints the name of item, quantity, its price and total cost
+      totalCost = self.item_priceVar.get() * self.item_quantity.get()
+      print(totalCost)
+    
+    def supportCommand(self):  
+        self.message = messagebox.showinfo(title="Technical Support",message="Please contact us at support@VertexConsulting.com")
+    
+    def addItemToCart(self):
+        global Cart
+        Cart.update({self.input_item_name.get(): int(self.item_quantity.get())})
+        print(Cart)
+        messagebox.showinfo(title="Success" , message="Item %s Added To The Cart !!"%self.input_item_name.get())
 
-    #Add to cart with selected item & quantity
-   
+def viewCart():
+    cartWindow = Toplevel()
+    cartWindow.title("The Shopping Cart")
+    cartWindow.grab_set()
+    cartWindow.geometry("700x500+120+120")
+    cartItemsLabelFrame = LabelFrame(cartWindow,text="Order Summary", font = 'Helvetica 20 bold')
+    cartItemsLabelFrame.pack(fill="both", expand="yes", padx="20", pady="10")
 
+    cartItemsFrame = Frame(cartItemsLabelFrame, padx="3", pady="3")
+    cartItemsFrame.pack()
+
+    Label2 = Label(cartItemsFrame, text = "Products Ordered", font = 'Helvetica 15 bold')
+    Label2.pack(side ='left', fill = "both", pady="1")
+
+    Cart_items= list(Cart.keys())
+
+    for items in range(len(Cart_items)):
+        itemFrame = Frame(cartItemsFrame,  pady="5")
+        itemFrame.pack(fill="both", expand="yes")
+        nameLabel = Label(itemFrame, text= Cart_items[items],font=("Helvetica",15),fg="black")
+        print(Cart_items)
+        priceLabel = Label(itemFrame, text="$ %s"%item[Cart_items[items]],font=("Helvetica",15),fg="green")
+        quantityLabel = Label(itemFrame, text="Qty: %d"%Cart[Cart_items[items]],font=("Helvetica",15))
+        nameLabel.pack(side="left")
+        quantityLabel.pack(side="right")
+        priceLabel.pack(side="right")
+
+    TotalFrame = Frame(cartItemsFrame,pady="5")
+    Label4 = Label(TotalFrame,text="Shipping Cost")
+
+    checkOutFrame = Frame(cartWindow, pady="20")
+    totalPriceLabel = Label(cartWindow, text="Total Price : $ %d" %getSubTotalPrice(), font=("Candara",14,"bold"),fg="indigo")
+    totalPriceLabel.pack(side="left")
+    buyBtn = Button(cartWindow, text="Buy Now", font=("Candara",15,"bold"),fg="indigo",bg="white",cursor="hand2")
+    buyBtn.pack(side="left",padx="10")
+    checkOutFrame.pack()
+
+    backToStoreBtn = Button(cartWindow, text="Back To Store", font=("Candara",15,"bold"),fg="red",bg="white",cursor="hand2",command=cartWindow.destroy)
+    backToStoreBtn.pack()
+    
+    cartWindow.mainloop()
+
+
+def buyCommand(cartWindow):
+    global cart
+    cart.emptyCart()
+    cartWindow.destroy()    
+    messagebox.showinfo(title="success",message="Purchase Completed Successfully")
 
 
 ItemToPurchase()
