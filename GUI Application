@@ -107,10 +107,6 @@ class ItemToPurchase:                     # this ItemToPurchase class is a templ
     def action_update_price (self,value):
         self.item_priceVar.set(self.item_option[value])
         return self.item_priceVar
-
-    def print_item_cost(self,value):             # print_item_cost is a method of the ItemToPurchase class that prints the name of item, quantity, its price and total cost
-      totalCost = self.item_priceVar.get() * self.item_quantity.get()
-      print(totalCost)
     
     def supportCommand(self):  
         self.message = messagebox.showinfo(title="Technical Support",message="Please contact us at support@VertexConsulting.com")
@@ -118,57 +114,85 @@ class ItemToPurchase:                     # this ItemToPurchase class is a templ
     def addItemToCart(self):
         global Cart
         Cart.update({self.input_item_name.get(): int(self.item_quantity.get())})
-        print(Cart)
         messagebox.showinfo(title="Success" , message="Item %s Added To The Cart !!"%self.input_item_name.get())
 
+
+
+#--------Create pop-up widget to view Shopping Cart----------
 def viewCart():
     cartWindow = Toplevel()
     cartWindow.title("The Shopping Cart")
     cartWindow.grab_set()
-    cartWindow.geometry("700x500+120+120")
+    cartWindow.geometry("700x300")
     cartItemsLabelFrame = LabelFrame(cartWindow,text="Order Summary", font = 'Helvetica 20 bold')
     cartItemsLabelFrame.pack(fill="both", expand="yes", padx="20", pady="10")
 
-    cartItemsFrame = Frame(cartItemsLabelFrame, padx="3", pady="3")
-    cartItemsFrame.pack()
+    cartItemsFrame = Frame(cartItemsLabelFrame)
+    cartItemsFrame.pack(padx=1, pady=4)
 
-    Label2 = Label(cartItemsFrame, text = "Products Ordered", font = 'Helvetica 15 bold')
-    Label2.pack(side ='left', fill = "both", pady="1")
+    Label2 = Label(cartItemsFrame, text = "Products Ordered:", font = 'Helvetica 20 bold')
+    Label2.pack(pady="1")
 
     Cart_items= list(Cart.keys())
-
+    totalPrice = 0
+#-------Display all items in Carts with the Price and Quantity & Calculate the total price before taxes --------
     for items in range(len(Cart_items)):
-        itemFrame = Frame(cartItemsFrame,  pady="5")
+        itemFrame = Frame(cartItemsFrame,  pady="1")
         itemFrame.pack(fill="both", expand="yes")
         nameLabel = Label(itemFrame, text= Cart_items[items],font=("Helvetica",15),fg="black")
         print(Cart_items)
-        priceLabel = Label(itemFrame, text="$ %s"%item[Cart_items[items]],font=("Helvetica",15),fg="green")
+        priceLabel = Label(itemFrame, text="$ %.2f"%item[Cart_items[items]],font=("Helvetica",15),fg="green")
         quantityLabel = Label(itemFrame, text="Qty: %d"%Cart[Cart_items[items]],font=("Helvetica",15))
+        totalPrice += (item[Cart_items[items]]*Cart[Cart_items[items]])
+        print(totalPrice)
         nameLabel.pack(side="left")
         quantityLabel.pack(side="right")
         priceLabel.pack(side="right")
+    
+    Label3 = Label(cartItemsFrame,text="Shipping Cost:", font=("Helvetica bold",15),fg="black")
+    Label3.pack(side="left",pady="2")
+    shippingcost = 30
+    Label4 = Label(cartItemsFrame, text="$ %.2f"%shippingcost,font=("Helvetica",15),fg="green")
+    Label4.pack(side = "left",pady="2")
 
-    TotalFrame = Frame(cartItemsFrame,pady="5")
-    Label4 = Label(TotalFrame,text="Shipping Cost")
+    
+    Label5 = Label(cartItemsFrame, text="Customer Discount 5%:", font=("Helvetica bold",15), fg="black")
+    Label5.pack(side="left")
+    CustomerDiscount = ((totalPrice)*0.05)
+    Label6 = Label(cartItemsFrame, text="$ %.2f"%CustomerDiscount,font=("Helvetica",15),fg="green")
+    Label6.pack(side="left")
+
+
+    SaleTaxFrame = Frame(cartItemsFrame)
+    SaleTaxFrame.pack(side="left",pady="3")
+    Label7 = Label(SaleTaxFrame, text="Sales Tax 13%:", font=("Helvetica bold",15), fg="black")
+    Label7.pack(side="left")
+
+    Subtotal = (totalPrice+shippingcost-CustomerDiscount)
+    Saletax = float(Subtotal*0.13)
+
+    Label6 = Label(SaleTaxFrame, text="$ %.2f"%Saletax,font=("Helvetica",15),fg="green")
+    Label6.pack(side="right")
+    
+    TotalCart = (float(Subtotal) + float(Saletax))
 
     checkOutFrame = Frame(cartWindow, pady="20")
-    totalPriceLabel = Label(cartWindow, text="Total Price : $ %d" %getSubTotalPrice(), font=("Candara",14,"bold"),fg="indigo")
+    totalPriceLabel = Label(cartWindow, text="Total Order : $ %.2f" %TotalCart, font=("Candara",14,"bold"),fg="green")
     totalPriceLabel.pack(side="left")
-    buyBtn = Button(cartWindow, text="Buy Now", font=("Candara",15,"bold"),fg="indigo",bg="white",cursor="hand2")
+    buyBtn = Button(cartWindow, text="Buy Now", font=("Candara",15,"bold"),fg="green",bg="white", command=lambda : buyCommand(cartWindow))
     buyBtn.pack(side="left",padx="10")
     checkOutFrame.pack()
 
-    backToStoreBtn = Button(cartWindow, text="Back To Store", font=("Candara",15,"bold"),fg="red",bg="white",cursor="hand2",command=cartWindow.destroy)
+    backToStoreBtn = Button(cartWindow, text="Back To Store", font=("Helvetical",15,"bold"),fg="green",bg="white",command=cartWindow.destroy)
     backToStoreBtn.pack()
     
     cartWindow.mainloop()
 
 
 def buyCommand(cartWindow):
-    global cart
-    cart.emptyCart()
+    global Cart
+    Cart.clear()
     cartWindow.destroy()    
     messagebox.showinfo(title="success",message="Purchase Completed Successfully")
-
 
 ItemToPurchase()
